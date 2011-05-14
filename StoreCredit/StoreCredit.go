@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"strings"
 )
 
 func main() {
@@ -18,9 +19,46 @@ func main() {
 	for j:=0; j< cases; j++ {
 		credit := nextNum(in)
 		items := nextNum(in)
-		prices := nextLine(in)
-		fmt.Println("credit:", credit, "items: ", items, "prices:" , prices)
+		prices := nextNums(in, items)
+		
+		p0, p1 := pairSum(credit, prices)
+		fmt.Printf("Case #%d: %d %d\n", j+1, p0+1, p1+1)
 	}
+}
+
+/* Return indices of two elements of 'n' which sum to 'sum' */
+func pairSum(sum int, n []int) (p0, p1 int) {
+
+	// map element value to element position
+	pos := make( map[int] int)
+
+	for p1, val := range(n) {
+		p0, ok := pos[sum-val]
+		if ok {
+			return p0, p1
+		}
+		pos[val] = p1
+	}
+	return
+}
+
+/* Read n nums from in */
+func nextNums(in *bufio.Reader, n int) (nums [] int) {
+	line := nextLine(in)
+
+	numStrings := strings.Split(line, " ", n)
+	
+	nums = make([]int, n)
+
+	for pos, numString := range(numStrings) {
+		
+		_, err := fmt.Sscanf(numString, "%d", &nums[pos])
+		if err != nil {
+			log.Fatalln("Sscan", err, numString)
+		}
+	}
+
+	return nums
 }
 
 func nextNum(in *bufio.Reader) (n int){
