@@ -4,14 +4,9 @@
 package main
 
 import (
-	"os"
-	"bufio"
+	"codejam/ProblemReader"
 	"fmt"
-	"log"
-	"strings"
 )
-
-type ProblemReader bufio.Reader
 
 /* Return indices of two elements of 'n' which sum to 'sum' */
 func pairSum(sum int, n []int) (p0, p1 int) {
@@ -29,59 +24,15 @@ func pairSum(sum int, n []int) (p0, p1 int) {
 	return
 }
 
-/* Read n nums from in */
-func (in *ProblemReader) nextNums(n int) (nums []int) {
-	line := nextLine(in)
-
-	numStrings := strings.Split(line, " ", n)
-
-	nums = make([]int, n)
-
-	for pos, numString := range numStrings {
-		_, err := fmt.Sscanf(numString, "%d", &nums[pos])
-		if err != nil {
-			log.Fatalln("Sscan", err, numString)
-		}
-	}
-
-	return nums
-}
-
-func (in *ProblemReader)nextNum() (n int) {
-	line := nextLine(in)
-	if _, err := fmt.Sscanln(line, &n); err != nil {
-		log.Fatalln("scanf", err)
-	}
-	return n
-}
-
-func nextLine(in *ProblemReader) string {
-	line, err := (*bufio.Reader)(in).ReadString('\n')
-	if err != nil {
-		log.Fatalln("readstring", err)
-	}
-	return line
-}
-
-func (in *ProblemReader) solveProblems( solve func(*ProblemReader)string) {
-	cases := in.nextNum()
-
-	for j := 0; j < cases; j++ {
-		fmt.Printf("Case #%d: %s\n", j+1, solve(in))
-	}
-}
-
-func solver(in *ProblemReader)(string) {
-	credit := in.nextNum()
-	items := in.nextNum()
-	prices := in.nextNums( items)
+func solver(in *ProblemReader.ProblemReader)(string) {
+	credit := in.NextNum()
+	items := in.NextNum()
+	prices := in.NextNums( items)
 
 	p0, p1 := pairSum(credit, prices)
 	return fmt.Sprintf("%d %d", p0+1, p1+1)
 }
 
 func main() {
-	in := (*ProblemReader)(bufio.NewReader(os.Stdin))
-
-	in.solveProblems(solver)
+	ProblemReader.In.SolveProblems(solver)
 }
