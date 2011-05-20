@@ -4,19 +4,18 @@
 package main
 
 import (
-	"fmt"
+	"strings"
 	"codejam/ProblemReader"
 )
 
 func solver(in *ProblemReader.ProblemReader)(string) {
 	words := in.Words()
 
-	credit := in.NextNum()
-	items := in.NextNum()
-	prices := in.NextNums( items)
-
-	p0, p1 := pairSum(credit, prices)
-	return fmt.Sprintf("%d %d", p0+1, p1+1)
+	reversed := make([]string, len(words))
+	for pos, word := range(words) {
+		reversed[len(words)-pos -1] = word
+	}
+	return strings.Join(reversed, " ")
 }
 
 func main() {

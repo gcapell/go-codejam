@@ -1,16 +1,23 @@
 package ProblemReader
 
 import (
-	"bufio"
 	"fmt"
 	"strings"
+	"strconv"
 	"log"
 	"os"
+	"encoding/line"
 )
 
-type ProblemReader bufio.Reader
+const (
+	MAX_LINE=2048
+)
 
-var	In = (*ProblemReader)(bufio.NewReader(os.Stdin))
+type ProblemReader struct {
+	r *line.Reader
+}
+
+var	In = ProblemReader{line.NewReader(os.Stdin, MAX_LINE)}
 
 func (in *ProblemReader) SolveProblems( solve func(*ProblemReader)string) {
 	cases := in.Num()
@@ -22,39 +29,43 @@ func (in *ProblemReader) SolveProblems( solve func(*ProblemReader)string) {
 
 /* Read n nums from in */
 func (in *ProblemReader) Nums(n int) (nums []int) {
-	line := in.Line()
-
-	numStrings := strings.Split(line, " ", n)
-
+	words := in.Words()
 	nums = make([]int, n)
 
-	for pos, numString := range numStrings {
-		_, err := fmt.Sscanf(numString, "%d", &nums[pos])
-		if err != nil {
-			log.Fatalln("Sscan", err, numString)
-		}
+	for pos, word := range words {
+		nums[pos] = atoi(word)
 	}
 
 	return nums
 }
 
-func (in *ProblemReader) Words() ([]string) {
-	line := in.Line()
-	return strings.Split(line, " ", -1)
-}
-
-func (in *ProblemReader) Num() (n int) {
-	line := in.Line()
-	if _, err := fmt.Sscanln(line, &n); err != nil {
-		log.Fatalln("scanf", err)
+func atoi(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatalln("atoi problem", s, err)
 	}
 	return n
 }
 
+func (in *ProblemReader) Words() ([]string) {
+	return strings.Fields(in.Line())
+}
+
+func (in *ProblemReader) Num() (n int) {
+	words := in.Words()
+	if len(words) != 1 {
+		log.Fatalln("Expected one number, got: ", words)
+	}
+	return atoi(words[0])
+}
+
 func (in *ProblemReader)Line() string {
-	line, err := (*bufio.Reader)(in).ReadString('\n')
+	line, isPrefix, err := in.r.ReadLine()
 	if err != nil {
 		log.Fatalln("readstring", err)
 	}
-	return line
+	if isPrefix {
+		log.Fatalln("line too long")
+	}
+	return string(line)
 }
