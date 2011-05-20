@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	MAX_LINE=2048
+	MAX_LINE=1<<15
 )
 
 type ProblemReader struct {
