@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"codejam/ProblemReader"
 )
 
@@ -13,7 +14,15 @@ func solver(in *ProblemReader.ProblemReader)(string) {
 	v1 := in.Nums(n)
 	v2 := in.Nums(n)
 
-	return fmt.Sprint("v1: ", v1, " v2: ", v2)
+	sort.SortInts(v1)
+	sort.SortInts(v2)
+
+	var sum int64 = 0
+
+	for j:= 0; j<n; j++ {
+		sum += int64(v1[j]) * int64(v2[n-j-1])
+	}
+	return fmt.Sprint(sum)
 }
 
 func main() {
