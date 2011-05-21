@@ -54,12 +54,8 @@ func (trie Trie) count (pattern [] byte) int {
 		for _, c := range(alternates) {
 			sum += trie.count1(c, remainder)
 		}
-	case '.':
-		for _, child := range(trie) {
-			sum += child.count(remainder)
-		}
 	default:
-		sum =  trie.count1(c, remainder)
+		return  trie.count1(c, remainder)
 	}
 	return sum
 }
@@ -86,7 +82,8 @@ func main() {
 	}
 	fmt.Println(trie)
 	for j:=0; j<nCases; j++ {
-		testCase := in.Line()
-		fmt.Println("case: ", testCase, trie.count([]byte(testCase)))
+		pattern := in.Line()
+		matches := trie.count([]byte(pattern))
+		fmt.Printf("Case #%d: %d\n", j+1, matches)
 	}
 }
