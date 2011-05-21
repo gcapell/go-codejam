@@ -71,8 +71,7 @@ func (trie Trie) count1 (c byte, remainder [] byte) int {
 func main() {
 	in := &ProblemReader.In
 	nums := in.Nums(3)
-	wordLength, nWords, nCases := nums[0], nums[1], nums[2]
-	fmt.Println("wordLength: ", wordLength, "nwords: ", nWords, "nCases:", nCases)
+	_, nWords, nCases := nums[0], nums[1], nums[2]
 
 	trie := newTrie()
 
@@ -80,7 +79,6 @@ func main() {
 		word := in.Line()
 		trie.add([]byte(word))
 	}
-	fmt.Println(trie)
 	for j:=0; j<nCases; j++ {
 		pattern := in.Line()
 		matches := trie.count([]byte(pattern))
