@@ -24,10 +24,10 @@ func pairSum(sum int, n []int) (p0, p1 int) {
 	return
 }
 
-func solver(in *ProblemReader.ProblemReader)(string) {
+func solver(in *ProblemReader.ProblemReader) string {
 	credit := in.Num()
 	items := in.Num()
-	prices := in.Nums( items)
+	prices := in.Nums(items)
 
 	p0, p1 := pairSum(credit, prices)
 	return fmt.Sprintf("%d %d", p0+1, p1+1)

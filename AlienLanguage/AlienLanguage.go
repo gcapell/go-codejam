@@ -10,7 +10,7 @@ import (
 	"codejam/ProblemReader"
 )
 
-type Trie map [byte] Trie
+type Trie map[byte]Trie
 
 func newTrie() Trie {
 	return Trie(make(map[byte]Trie))
@@ -29,7 +29,7 @@ func (trie Trie) add(word []byte) {
 	child.add(remainder)
 }
 
-func splitParen(pattern [] byte) (alternates [] byte, remainder [] byte) {
+func splitParen(pattern []byte) (alternates []byte, remainder []byte) {
 	s := string(pattern)
 	pos := strings.Index(s, ")")
 	if pos == -1 {
@@ -42,7 +42,7 @@ func splitParen(pattern [] byte) (alternates [] byte, remainder [] byte) {
 }
 
 /* Count matches of 'pattern' in 'trie' */
-func (trie Trie) count (pattern [] byte) int {
+func (trie Trie) count(pattern []byte) int {
 	if len(pattern) == 0 {
 		return 1
 	}
@@ -51,16 +51,16 @@ func (trie Trie) count (pattern [] byte) int {
 	switch c {
 	case '(':
 		alternates, remainder := splitParen(remainder)
-		for _, c := range(alternates) {
+		for _, c := range alternates {
 			sum += trie.count1(c, remainder)
 		}
 	default:
-		return  trie.count1(c, remainder)
+		return trie.count1(c, remainder)
 	}
 	return sum
 }
 
-func (trie Trie) count1 (c byte, remainder [] byte) int {
+func (trie Trie) count1(c byte, remainder []byte) int {
 	child, ok := trie[c]
 	if !ok {
 		return 0
@@ -75,11 +75,11 @@ func main() {
 
 	trie := newTrie()
 
-	for j:=0; j<nWords; j++ {
+	for j := 0; j < nWords; j++ {
 		word := in.Line()
 		trie.add([]byte(word))
 	}
-	for j:=0; j<nCases; j++ {
+	for j := 0; j < nCases; j++ {
 		pattern := in.Line()
 		matches := trie.count([]byte(pattern))
 		fmt.Printf("Case #%d: %d\n", j+1, matches)

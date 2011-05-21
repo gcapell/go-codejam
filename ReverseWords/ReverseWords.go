@@ -8,12 +8,12 @@ import (
 	"codejam/ProblemReader"
 )
 
-func solver(in *ProblemReader.ProblemReader)(string) {
+func solver(in *ProblemReader.ProblemReader) string {
 	words := in.Words()
 
 	reversed := make([]string, len(words))
-	for pos, word := range(words) {
-		reversed[len(words)-pos -1] = word
+	for pos, word := range words {
+		reversed[len(words)-pos-1] = word
 	}
 	return strings.Join(reversed, " ")
 }

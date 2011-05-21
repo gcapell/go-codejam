@@ -10,16 +10,16 @@ import (
 )
 
 const (
-	MAX_LINE=1<<15
+	MAX_LINE = 1 << 15
 )
 
 type ProblemReader struct {
 	r *line.Reader
 }
 
-var	In = ProblemReader{line.NewReader(os.Stdin, MAX_LINE)}
+var In = ProblemReader{line.NewReader(os.Stdin, MAX_LINE)}
 
-func (in *ProblemReader) SolveProblems( solve func(*ProblemReader)string) {
+func (in *ProblemReader) SolveProblems(solve func(*ProblemReader) string) {
 	cases := in.Num()
 
 	for j := 0; j < cases; j++ {
@@ -47,7 +47,7 @@ func atoi(s string) int {
 	return n
 }
 
-func (in *ProblemReader) Words() ([]string) {
+func (in *ProblemReader) Words() []string {
 	return strings.Fields(in.Line())
 }
 
@@ -59,7 +59,7 @@ func (in *ProblemReader) Num() (n int) {
 	return atoi(words[0])
 }
 
-func (in *ProblemReader)Line() string {
+func (in *ProblemReader) Line() string {
 	line, isPrefix, err := in.r.ReadLine()
 	if err != nil {
 		log.Fatalln("readstring", err)

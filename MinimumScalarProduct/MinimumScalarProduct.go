@@ -9,7 +9,7 @@ import (
 	"codejam/ProblemReader"
 )
 
-func solver(in *ProblemReader.ProblemReader)(string) {
+func solver(in *ProblemReader.ProblemReader) string {
 	n := in.Num()
 	v1 := in.Nums(n)
 	v2 := in.Nums(n)
@@ -19,7 +19,7 @@ func solver(in *ProblemReader.ProblemReader)(string) {
 
 	var sum int64 = 0
 
-	for j:= 0; j<n; j++ {
+	for j := 0; j < n; j++ {
 		sum += int64(v1[j]) * int64(v2[n-j-1])
 	}
 	return fmt.Sprint(sum)
