@@ -17,71 +17,7 @@ func solver(in *ProblemReader.ProblemReader) string {
 		shiftLine(line)
 		lines[j] = string(line)
 	}
-	return winner(lines, board, toWin)
-}
-
-func winner(lines []string, board int, toWin int) (reply string) {
-	fmt.Println("board:", board, "toWin:", toWin)
-	for row, line := range lines {
-		fmt.Println(line, row)
-	}
-	redWin := findWin(lines, board, toWin, 'R')
-	blueWin := findWin(lines, board, toWin, 'B')
-	
-	switch {
-	case redWin && blueWin: reply = "Both"
-	case redWin: reply = "Red"
-	case blueWin: reply = "Blue"
-	default: reply = "Neither"
-	}
-	return reply
-}
-
-func findWin(lines []string, board int, toWin int, c byte) bool {
-	fmt.Println("findWin", string(c))
-	
-	for row :=len(lines)-1; row >=0; row-- {
-		first := len(lines)-toWin
-		found := 0
-
-		for first >=0 && lines[row][first]!='.' {
-			required := toWin - found
-			found = 0
-			for pos := first; pos < first + required; pos++ {
-				fmt.Println(row, pos, string(lines[row][pos]))
-				if lines[row][pos] == c {
-					found++
-				} else {
-					break
-				}
-			}
-			if found == required {
-				fmt.Println("success!")
-				return true
-			}
-		}
-	}
-
-	// Vertical
-	fmt.Println("vertical")
-	for col :=len(lines)-1; col >=0; col-- {
-		first := len(lines)-toWin
-
-		vertical:
-		for first >=0 && lines[first][col]!='.' {
-			for pos := first; pos < first + toWin; pos++ {
-				fmt.Println(pos, col, string(lines[pos][col]))
-				if lines[pos][col] != c {
-					first = pos - toWin
-					continue vertical
-				}
-			}
-			fmt.Println("success!")
-			return true
-		}
-	}
-	
-	return false
+	return winner(lines, toWin)
 }
 
 func shiftLine(line []byte)  {
@@ -97,6 +33,125 @@ func shiftLine(line []byte)  {
 	}
 }
 
+func winner(lines []string, toWin int) (reply string) {
+	if false {
+		for row, line := range lines {
+			fmt.Println(line, row)
+		}
+	}
+	redWin := findWin(lines, toWin, 'R')
+	blueWin := findWin(lines, toWin, 'B')
+	
+	switch {
+	case redWin && blueWin: reply = "Both"
+	case redWin: reply = "Red"
+	case blueWin: reply = "Blue"
+	default: reply = "Neither"
+	}
+	return reply
+}
+
+func findWin(lines []string, toWin int, c byte) bool {
+	// fmt.Println("findWin", string(c))
+	
+	board := len(lines)
+	sequenceChan := make(chan sequence)
+	go listSequences(board, sequenceChan)
+	for s := range sequenceChan {
+		// fmt.Println("sequence: ", s)
+		p := s.forward(s.start, -(toWin-1))
+		found := 0
+		required := toWin - found
+
+		thisSeq:
+		for p.onBoard(board) {
+			// fmt.Println("p: ", p, string(lines[p.row][p.col]))
+			switch lines[p.row][p.col] {
+			case c:
+				found++
+				p = s.forward(p, 1)
+			case '.':
+				if s.earlyExit {
+					break thisSeq
+				}
+				required, found = toWin, 0
+				p = s.forward(p, -toWin)
+			default:
+				required = toWin - found
+				found = 0
+				p = s.forward(p, -toWin)
+			}
+			if found == required {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+type point struct {
+	row, col int
+}
+
+type sequence struct {
+	name string
+	start point
+	earlyExit bool
+	forward func(point, int) point
+}
+
+func(s sequence) String() string {
+	return fmt.Sprintf("%s %v", s.name, s.start)
+}
+
+func(p point) onBoard(board int) bool {
+	return p.row >= 0 && p.row < board && p.col >= 0 && p.col < board
+}
+
+func listSequences(board int, c chan sequence) {
+	// Left
+	forward := func(p point, n int) point {
+		return point{p.row, p.col + n}
+	}
+	for j :=0; j<board; j++ {
+		c <- sequence{ "left", point{board-1-j, board-1}, true, forward}
+	}
+
+	// Down
+	forward = func(p point, n int) point {
+		return point{p.row + n, p.col }
+	}
+	for j :=0; j<board; j++ {
+		c <- sequence{ "down", point{board-1, j}, true, forward}
+	}
+
+	// Bottom left to top right
+	forward = func(p point, n int) point {
+		return point{p.row-n, p.col + n}
+	}
+
+	for j :=0; j<board; j++ {
+		c <- sequence{ "updiag",point{0, j}, false, forward}
+		if j != 0 {
+			c <- sequence{ "updiag", point{j, board-1}, false, forward}
+		}
+	}
+
+	// Top left to bottom right
+	forward = func(p point, n int) point {
+		return point{p.row+n, p.col + n}
+	}
+
+	for j :=0; j<board; j++ {
+		
+		c <- sequence{ "downdiag", point{j, board-1}, true, forward}
+		if j != board-1 {
+			c <- sequence{ "downdiag", point{board-1, j}, true, forward}
+		}
+	}
+	close(c)
+}
+	
 func main() {
 	ProblemReader.In.SolveProblems(solver)
 }
