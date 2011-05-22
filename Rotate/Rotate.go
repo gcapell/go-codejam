@@ -4,16 +4,24 @@
 package main
 
 import (
+	"log"
 	"fmt"
 	"codejam/ProblemReader"
 )
 
+func assert(b bool) {
+	if !b {
+		log.Fatalln("assertion")
+	}
+}
 func solver(in *ProblemReader.ProblemReader) string {
 	nums := in.Nums(2)
 	board, toWin := nums[0], nums[1]
+	assert (toWin <= board)
 	lines := make([] string, board)
 	for j := 0; j < board; j++ {
 		line := []byte(in.Line())
+		assert(len(line) == board)
 		shiftLine(line)
 		lines[j] = string(line)
 	}
@@ -24,6 +32,7 @@ func shiftLine(line []byte)  {
 	writePos := len(line)-1
 	for readPos := len(line)-1; readPos >=0; readPos-- {
 		if line[readPos] != '.' {
+			assert (line[readPos] == 'R' || line[readPos] == 'B')
 			line[writePos] = line[readPos]
 			writePos--
 		}
@@ -34,7 +43,7 @@ func shiftLine(line []byte)  {
 }
 
 func winner(lines []string, toWin int) (reply string) {
-	if false {
+	if true {
 		for row, line := range lines {
 			fmt.Println(line, row)
 		}
@@ -52,37 +61,24 @@ func winner(lines []string, toWin int) (reply string) {
 }
 
 func findWin(lines []string, toWin int, c byte) bool {
-	// fmt.Println("findWin", string(c))
+	//fmt.Println("findWin", string(c))
 	
 	board := len(lines)
 	sequenceChan := make(chan sequence)
 	go listSequences(board, sequenceChan)
 	for s := range sequenceChan {
-		// fmt.Println("sequence: ", s)
-		p := s.forward(s.start, -(toWin-1))
+		//fmt.Println("sequence: ", s)
 		found := 0
-		required := toWin - found
 
-		thisSeq:
-		for p.onBoard(board) {
-			// fmt.Println("p: ", p, string(lines[p.row][p.col]))
-			switch lines[p.row][p.col] {
-			case c:
+		for p := s.start; p.onBoard(board); p = s.next(p) {
+			//fmt.Println("p: ", p, found, string(lines[p.row][p.col]))
+			if lines[p.row][p.col] == c {
 				found++
-				p = s.forward(p, 1)
-			case '.':
-				if s.earlyExit {
-					break thisSeq
+				if found == toWin {
+					return true
 				}
-				required, found = toWin, 0
-				p = s.forward(p, -toWin)
-			default:
-				required = toWin - found
+			} else {
 				found = 0
-				p = s.forward(p, -toWin)
-			}
-			if found == required {
-				return true
 			}
 		}
 	}
@@ -96,8 +92,7 @@ type point struct {
 type sequence struct {
 	name string
 	start point
-	earlyExit bool
-	forward func(point, int) point
+	next func(point) point
 }
 
 func(s sequence) String() string {
@@ -109,45 +104,40 @@ func(p point) onBoard(board int) bool {
 }
 
 func listSequences(board int, c chan sequence) {
-	// Left
-	forward := func(p point, n int) point {
-		return point{p.row, p.col + n}
+	// Right
+	next := func(p point) point {
+		return point{p.row, p.col + 1}
 	}
 	for j :=0; j<board; j++ {
-		c <- sequence{ "left", point{board-1-j, board-1}, true, forward}
+		c <- sequence{ "right", point{j,0}, next}
 	}
 
 	// Down
-	forward = func(p point, n int) point {
-		return point{p.row + n, p.col }
+	next = func(p point) point {
+		return point{p.row + 1, p.col }
 	}
 	for j :=0; j<board; j++ {
-		c <- sequence{ "down", point{board-1, j}, true, forward}
+		c <- sequence{ "down", point{0, j}, next}
 	}
 
 	// Bottom left to top right
-	forward = func(p point, n int) point {
-		return point{p.row-n, p.col + n}
+	next = func(p point) point {
+		return point{p.row - 1, p.col + 1}
 	}
 
 	for j :=0; j<board; j++ {
-		c <- sequence{ "updiag",point{0, j}, false, forward}
-		if j != 0 {
-			c <- sequence{ "updiag", point{j, board-1}, false, forward}
-		}
+		c <- sequence{ "updiag", point{board -1 -j, 0}, next}
+		c <- sequence{ "updiag", point{ board-1, j}, next}
 	}
 
 	// Top left to bottom right
-	forward = func(p point, n int) point {
-		return point{p.row+n, p.col + n}
+	next = func(p point) point {
+		return point{p.row+1, p.col + 1}
 	}
 
 	for j :=0; j<board; j++ {
-		
-		c <- sequence{ "downdiag", point{j, board-1}, true, forward}
-		if j != board-1 {
-			c <- sequence{ "downdiag", point{board-1, j}, true, forward}
-		}
+		c <- sequence{ "downdiag", point{0, j}, next}
+		c <- sequence{ "downdiag", point{j, 0}, next}
 	}
 	close(c)
 }
