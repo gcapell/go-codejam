@@ -8,14 +8,14 @@ import (
 	"codejam/ProblemReader"
 )
 
-var lastVal = -1	// last value assigned to a letter
+var lastVal = -1 // last value assigned to a letter
 
 func solver(in *ProblemReader.ProblemReader) string {
 	word := []byte(in.Line())
 	lastVal = -1
 
-	letterVal := make (map[byte] int)
-	for _,c := range word {
+	letterVal := make(map[byte]int)
+	for _, c := range word {
 		if _, ok := letterVal[c]; !ok {
 			letterVal[c] = nextVal()
 		}
@@ -27,10 +27,10 @@ func solver(in *ProblemReader.ProblemReader) string {
 	}
 	sum := int64(0)
 	mul := int64(1)
-	
+
 	//fmt.Println("letterVal: ", letterVal, "word:", word)
 
-	for j := len(word)-1; j>=0; j-- {
+	for j := len(word) - 1; j >= 0; j-- {
 		sum += mul * int64(letterVal[word[j]])
 		//fmt.Println("letter: ", word[j], "val: ", letterVal[word[j]], "mul: ", mul, "sum: ", sum)
 		mul *= base
@@ -40,10 +40,14 @@ func solver(in *ProblemReader.ProblemReader) string {
 
 func nextVal() int {
 	switch lastVal {
-	case -1: lastVal = 1
-	case 1: lastVal = 0
-	case 0: lastVal = 2
-	default: lastVal++
+	case -1:
+		lastVal = 1
+	case 1:
+		lastVal = 0
+	case 0:
+		lastVal = 2
+	default:
+		lastVal++
 	}
 	return lastVal
 }
