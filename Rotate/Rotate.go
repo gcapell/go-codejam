@@ -4,14 +4,14 @@
 package main
 
 import (
-	"log"
 	"fmt"
+	"log"
 	"codejam/ProblemReader"
 )
 
 func assert(b bool) {
 	if !b {
-		log.Fatalln("assertion")
+		panic("assertion")
 	}
 }
 func solver(in *ProblemReader.ProblemReader) string {
@@ -21,7 +21,9 @@ func solver(in *ProblemReader.ProblemReader) string {
 	lines := make([]string, board)
 	for j := 0; j < board; j++ {
 		line := []byte(in.Line())
-		assert(len(line) == board)
+		if len(line) != board {
+			log.Fatalf("Expected %#v to be %d long", string(line), board)
+		}
 		shiftLine(line)
 		lines[j] = string(line)
 	}
@@ -43,7 +45,7 @@ func shiftLine(line []byte) {
 }
 
 func winner(lines []string, toWin int) (reply string) {
-	if true {
+	if false {
 		for row, line := range lines {
 			fmt.Println(line, row)
 		}
