@@ -4,6 +4,8 @@
 package main
 
 import (
+	"container/heap"
+	"container/vector"
 	"time"
 	"log"
 	"sort"
@@ -11,9 +13,32 @@ import (
 	"codejam/ProblemReader"
 )
 
+const (
+	A= "A"
+	B= "B"
+)
+
 type trip struct {
-	src string
+	src, dst string
 	depart, arrive int
+}
+
+type myHeap struct {
+	vector.IntVector
+}
+func (h *myHeap) Less(i, j int) bool { return h.At(i) < h.At(j) }
+
+type station struct {
+	reserved int
+	waiting myHeap
+}
+
+var (
+	allStations = map[string] station {A: station{},B: station{}}
+)
+
+func newStation() station {
+	return station{}
 }
 
 func (t trip) String() string {
@@ -30,19 +55,44 @@ func solver(in *ProblemReader.ProblemReader) string {
 	allTrips := make([]trip, nA + nB)
 	
 	for j :=0; j< nA; j++ {
-		allTrips[j] = readTrip(in, "A")
+		allTrips[j] = readTrip(in, A, B)
 	}
 	for j :=0; j< nB; j++ {
-		allTrips[nA +j ] = readTrip(in, "B")
+		allTrips[nA +j ] = readTrip(in, B, B)
 	}
 	sort.Sort(tripArray(allTrips))
-	fmt.Println(allTrips)
-	return "dude"
+	
+	for _, t := range allTrips {
+		fmt.Println(t)
+		src, dst := allStations[t.src], allStations[t.dst]
+		src.getTrain(t.depart)
+		dst.addTrain(t.arrive + turnAround)
+	}
+
+	sum := 0
+	for _,v := range allStations {
+		sum += v.reserved
+	}
+
+	return fmt.Sprintf("%d", sum)
 }
 
-func readTrip(in *ProblemReader.ProblemReader, src string) trip {
+func (s station) getTrain(departure int) {
+	h := s.waiting
+	if h.Len() > 0  && h.At(0) < departure {
+		heap.Pop(&h)
+	} else {
+		s.reserved++
+	}
+}
+
+func (s station) addTrain(arrival int) {
+	heap.Push(s.waiting, interval)
+}
+
+func readTrip(in *ProblemReader.ProblemReader, src string, dst string) trip {
 	sched := in.Words()
-	return trip { src , parseT(sched[0]), parseT(sched[1]) }
+	return trip { src , dst, parseT(sched[0]), parseT(sched[1]) }
 }
 
 func parseT(s string) int {
