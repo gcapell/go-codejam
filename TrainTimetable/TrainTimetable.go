@@ -24,70 +24,69 @@ type trip struct {
 }
 
 type myHeap struct {
-	vector.IntVector
+	vector.Vector
 }
-func (h *myHeap) Less(i, j int) bool { return h.At(i) < h.At(j) }
+
+func (h *myHeap) Less(i, j int) bool { return h.At(i).(int) < h.At(j).(int) }
 
 type station struct {
+	name string
 	reserved int
 	waiting myHeap
 }
 
+func (s *station) clear() {
+	s.reserved = 0
+	s.waiting.Resize(0, 0)
+}
+
 var (
-	allStations = map[string] station {A: station{},B: station{}}
+	allStations = map[string] *station {A: &station{name:A},B: &station{name:B}}
 )
-
-func newStation() station {
-	return station{}
-}
-
-func (t trip) String() string {
-	return fmt.Sprintf("%s %d -> %d", t.src, t.depart, t.arrive)
-}
 
 type tripArray [] trip
 
 func solver(in *ProblemReader.ProblemReader) string {
 	turnAround := in.Num()
-	fmt.Println("turnAround", turnAround)
 	nums := in.Nums(2)
 	nA, nB := nums[0], nums[1]
 	allTrips := make([]trip, nA + nB)
 	
+	for _,v := range allStations {
+		v.clear()
+	}
+
 	for j :=0; j< nA; j++ {
 		allTrips[j] = readTrip(in, A, B)
 	}
 	for j :=0; j< nB; j++ {
-		allTrips[nA +j ] = readTrip(in, B, B)
+		allTrips[nA +j ] = readTrip(in, B, A)
 	}
 	sort.Sort(tripArray(allTrips))
 	
 	for _, t := range allTrips {
-		fmt.Println(t)
 		src, dst := allStations[t.src], allStations[t.dst]
+
+		// fmt.Printf("trip:%v, from %v to %v\n", t, src, dst)
+
 		src.getTrain(t.depart)
 		dst.addTrain(t.arrive + turnAround)
 	}
 
-	sum := 0
-	for _,v := range allStations {
-		sum += v.reserved
-	}
-
-	return fmt.Sprintf("%d", sum)
+	return fmt.Sprintf("%d %d", allStations[A].reserved, allStations[B].reserved)
 }
 
-func (s station) getTrain(departure int) {
-	h := s.waiting
-	if h.Len() > 0  && h.At(0) < departure {
-		heap.Pop(&h)
+func (s *station) getTrain(departure int) {
+	h := &s.waiting
+	if h.Len() > 0  && h.At(0).(int) <= departure {
+		heap.Pop(h)
 	} else {
 		s.reserved++
 	}
 }
 
-func (s station) addTrain(arrival int) {
-	heap.Push(s.waiting, interval)
+func (s *station) addTrain(arrival int) {
+	heap.Push(&s.waiting, arrival)
 }
 
 func readTrip(in *ProblemReader.ProblemReader, src string, dst string) trip {
