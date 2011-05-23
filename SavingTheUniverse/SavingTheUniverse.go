@@ -12,17 +12,17 @@ var lastVal = -1 // last value assigned to a letter
 
 func solver(in *ProblemReader.ProblemReader) string {
 	nEngines := in.Num()
-	
-	engines := make ([]string, nEngines)
-	for j:=0; j<nEngines; j++ {
+
+	engines := make([]string, nEngines)
+	for j := 0; j < nEngines; j++ {
 		engines[j] = in.Line()
 	}
 
 	terms := in.Num()
-	available := make(map[string] bool)
+	available := make(map[string]bool)
 	reset(available, engines, "")
 	changes := 0
-	for j:=0; j<terms; j++ {
+	for j := 0; j < terms; j++ {
 		term := in.Line()
 		if _, ok := available[term]; ok {
 			available[term] = false, false
@@ -35,7 +35,7 @@ func solver(in *ProblemReader.ProblemReader) string {
 	return fmt.Sprintf("%d", changes)
 }
 
-func reset(available map[string]bool, engines []string, lastUsed string ) {
+func reset(available map[string]bool, engines []string, lastUsed string) {
 	for _, s := range engines {
 		if s != lastUsed {
 			available[s] = true
