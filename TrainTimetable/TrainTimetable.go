@@ -13,11 +13,11 @@ import (
 
 type trip struct {
 	src string
-	depart, arrive *time.Time
+	depart, arrive int
 }
 
 func (t trip) String() string {
-	return fmt.Sprintf("%s %02d:%02d -> %02d:%02d", t.src, t.depart.Hour, t.depart.Minute, t.arrive.Hour, t.arrive.Minute)
+	return fmt.Sprintf("%s %d -> %d", t.src, t.depart, t.arrive)
 }
 
 type tripArray [] trip
@@ -45,12 +45,12 @@ func readTrip(in *ProblemReader.ProblemReader, src string) trip {
 	return trip { src , parseT(sched[0]), parseT(sched[1]) }
 }
 
-func parseT(s string) *time.Time {
+func parseT(s string) int {
 	t, error := time.Parse("15:04", s)
 	if error != nil {
 		log.Fatalln("problem", error, "parsing", s)
 	}
-	return t
+	return t.Hour*60 + t.Minute
 }
 
 func main() {
@@ -62,13 +62,7 @@ func (t tripArray) Len() int {
 }
 
 func (t tripArray) Less(i,j int) bool {
-	a, b := t[i].depart, t[j].depart
-	switch {
-	case a.Hour < b.Hour: return true
-	case b.Hour < a.Hour: return false
-	case a.Minute < b.Minute: return true
-	}
-	return false
+	return t[i].depart < t[j].depart
 }
 
 func (t tripArray) Swap(i,j int) {
