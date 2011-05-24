@@ -27,15 +27,24 @@ func (in *ProblemReader) SolveProblems(solve func(*ProblemReader) string) {
 	}
 }
 
-/* Read n nums from in */
-func (in *ProblemReader) Nums(n int) (nums []int) {
+/* Read nums from in */
+func (in *ProblemReader) Nums() (nums []int) {
 	words := in.Words()
-	nums = make([]int, n)
+	nums = make([]int, len(words))
 
 	for pos, word := range words {
 		nums[pos] = atoi(word)
 	}
 
+	return nums
+}
+
+/* Read n nums from in */
+func (in *ProblemReader) NNums(n int) (nums []int) {
+	nums = in.Nums()
+	if len(nums) != n {
+		log.Fatalln("expected %d nums, got %d (%v)", n, len(nums), nums)
+	}
 	return nums
 }
 

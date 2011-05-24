@@ -15,7 +15,7 @@ func assert(b bool) {
 	}
 }
 func solver(in *ProblemReader.ProblemReader) string {
-	nums := in.Nums(2)
+	nums := in.NNums(2)
 	board, toWin := nums[0], nums[1]
 	assert(toWin <= board)
 	lines := make([]string, board)

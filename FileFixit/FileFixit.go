@@ -35,7 +35,7 @@ func (tree Tree) add(path string) int {
 }
 
 func solver(in *ProblemReader.ProblemReader) string {
-	nums := in.Nums(2)
+	nums := in.NNums(2)
 	existing, toCreate := nums[0], nums[1]
 
 	tree := newTree()

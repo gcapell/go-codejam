@@ -48,7 +48,7 @@ type tripArray []trip
 
 func solver(in *ProblemReader.ProblemReader) string {
 	turnAround := in.Num()
-	nums := in.Nums(2)
+	nums := in.NNums(2)
 	nA, nB := nums[0], nums[1]
 	allTrips := make([]trip, nA+nB)
 

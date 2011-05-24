@@ -33,7 +33,7 @@ func solver(in *ProblemReader.ProblemReader) string {
 	wires := make([]Wire, n)
 
 	for j := 0; j < n; j++ {
-		wire := in.Nums(2)
+		wire := in.NNums(2)
 		wires[j] = Wire{wire[0], wire[1]}
 	}
 	sort.Sort(WireSlice(wires))

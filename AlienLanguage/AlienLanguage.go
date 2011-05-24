@@ -70,7 +70,7 @@ func (trie Trie) count1(c byte, remainder []byte) int {
 
 func main() {
 	in := &ProblemReader.In
-	nums := in.Nums(3)
+	nums := in.NNums(3)
 	_, nWords, nCases := nums[0], nums[1], nums[2]
 
 	trie := newTrie()

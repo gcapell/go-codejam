@@ -11,8 +11,8 @@ import (
 
 func solver(in *ProblemReader.ProblemReader) string {
 	n := in.Num()
-	v1 := in.Nums(n)
-	v2 := in.Nums(n)
+	v1 := in.NNums(n)
+	v2 := in.NNums(n)
 
 	sort.SortInts(v1)
 	sort.SortInts(v2)
