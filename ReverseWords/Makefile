@@ -1,9 +1,5 @@
-include $(GOROOT)/src/Make.inc
+include ../Make.inc
 
-TARG=ReverseWords
-GOFILES=$(TARG).go
+GOFILES=ReverseWords.go
 
 include $(GOROOT)/src/Make.cmd
-
-test: $(TARG)
-	./$(TARG) < sample.txt

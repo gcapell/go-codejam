@@ -1,9 +1,5 @@
-include $(GOROOT)/src/Make.inc
+include ../Make.inc
 
-TARG=Rotate
-GOFILES=$(TARG).go
+GOFILES=Rotate.go
 
 include $(GOROOT)/src/Make.cmd
-
-test: $(TARG)
-	./$(TARG) < sample.txt

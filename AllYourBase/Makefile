@@ -1,9 +1,5 @@
-include $(GOROOT)/src/Make.inc
+include ../Make.inc
 
-TARG=AllYourBase
-GOFILES=$(TARG).go
+GOFILES=AllYourBase.go
 
 include $(GOROOT)/src/Make.cmd
-
-test: $(TARG)
-	./$(TARG) < sample.txt

@@ -1,9 +1,5 @@
-include $(GOROOT)/src/Make.inc
+include ../Make.inc
 
-TARG=TrainTimetable
-GOFILES=$(TARG).go
+GOFILES=TrainTimetable.go
 
 include $(GOROOT)/src/Make.cmd
-
-test: $(TARG)
-	./$(TARG) < sample.txt

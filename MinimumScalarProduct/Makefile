@@ -1,9 +1,5 @@
-include $(GOROOT)/src/Make.inc
+include ../Make.inc
 
-TARG=MinimumScalarProduct
-GOFILES=$(TARG).go
+GOFILES=MinimumScalarProduct.go
 
 include $(GOROOT)/src/Make.cmd
-
-test: $(TARG)
-	./$(TARG) < sample.txt
