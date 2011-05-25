@@ -4,26 +4,16 @@
 package main
 
 import (
-	"fmt"
-	"strings"
 	"codejam/ProblemReader"
 )
 
 type Cell struct {
 	altitude int
-	row, col int
 
 	tributaries  [4]*Cell
 	nTributaries int
 	root         *Cell
 	name         string
-}
-
-func (c *Cell) String() string {
-	if c.root != nil {
-		return fmt.Sprintf("%d(%d,%d)->(%d,%d)", c.altitude, c.row, c.col, c.root.row, c.root.col)
-	}
-	return fmt.Sprintf("%d(%d,%d)", c.altitude, c.row, c.col)
 }
 
 func (c *Cell) addTributary(t *Cell) {
@@ -45,14 +35,6 @@ func (c *Cell) markTributaries() {
 type board struct {
 	width, height int
 	cell          [][]*Cell
-}
-
-func (b *board) String() string {
-	lines := make([]string, b.height)
-	for j := 0; j < b.height; j++ {
-		lines[j] = fmt.Sprintf("%v", b.cell[j])
-	}
-	return strings.Join(lines, "\n")
 }
 
 func (b *board) display() string {
@@ -120,7 +102,7 @@ func loadBoard(in *ProblemReader.ProblemReader) *board {
 		b.cell[j] = make([]*Cell, b.width)
 		altitude := in.NNums(b.width)
 		for k := 0; k < b.width; k++ {
-			b.cell[j][k] = &Cell{altitude: altitude[k], row: j, col: k}
+			b.cell[j][k] = &Cell{altitude: altitude[k]}
 		}
 	}
 	return b
@@ -128,7 +110,6 @@ func loadBoard(in *ProblemReader.ProblemReader) *board {
 func solver(in *ProblemReader.ProblemReader) string {
 	board := loadBoard(in)
 
-	// fmt.Printf("board:\n%s\n", board)
 	sinks := make([]*Cell, 0)
 
 	for c := range board.cellsAndNeighbours() {
@@ -140,11 +121,9 @@ func solver(in *ProblemReader.ProblemReader) string {
 			}
 		}
 		if lowest == c.cell {
-			// fmt.Printf("Cell: %s sink\n", c.cell)
 			c.cell.markSink()
 			sinks = append(sinks, c.cell)
 		} else {
-			// fmt.Printf("Cell: %s -> %s\n", c.cell, lowest)
 			lowest.addTributary(c.cell)
 		}
 	}
